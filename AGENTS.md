@@ -1,10 +1,10 @@
 # What this repo is
 
-This repository contains a local-first DevOps interview assignment. Preserve the original assignment files and README.
+This repository contains a test assignment for the position of DevOps Engineer. Company for which the task is done is not supposed to be mentioned in the repo, so this implementation is harder to find <help me with wording here> by other candidates.
 
 # Architecture
 
-Use Python, kind, Helm, and GitHub Actions. Kubernetes runs locally; do not add cloud infrastructure. See `docs/` for details.
+According to the assignment requirements it is supposed to be local-first and cloud providers should not be used. See `docs/` for architecture decisions.
 
 # Sensitive areas — stop and ask before changing
 
@@ -14,5 +14,6 @@ There are currently no special restrictions. Stop and ask before changing GitHub
 
 - Do not inspect, copy, or derive solutions from other forks or pull requests.
 - Do not open a pull request against the upstream repository.
-- Use Conventional Commits, for example `feat(terraform): bootstrap infrastructure` or `feat(ci): add pipeline`.
+- Use Conventional Commits (https://www.conventionalcommits.org/en/v1.0.0/)
+- Use simple and concise English
 - Other coding conventions may be added later.
