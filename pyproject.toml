@@ -2,7 +2,7 @@
 name = "cm-interview"
 version = "0.0.0"
 description = "Local-first DevOps interview exercise"
-requires-python = ">=3.12"
+requires-python = ">=3.12,<3.14"
 dependencies = []
 
 [build-system]
