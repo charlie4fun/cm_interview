@@ -15,5 +15,6 @@ There are currently no special restrictions. Stop and ask before changing GitHub
 - Do not inspect, copy, or derive solutions from other forks or pull requests.
 - Do not open a pull request against the upstream repository.
 - Use Conventional Commits (https://www.conventionalcommits.org/en/v1.0.0/)
+- Do not bypass commit signing with `git -c commit.gpgsign=false commit`. Stop and ask if signing fails.
 - Use simple and concise English
 - Other coding conventions may be added later.
