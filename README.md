@@ -20,6 +20,16 @@ This repository contains a local-first implementation of the original
 
 ## Architecture
 
+```mermaid
+flowchart LR
+    Source --> Docker
+    Docker --> Kind
+    Kind --> Helm
+    Helm --> Verify
+    Docker --> GHCR
+    GHCR --> Kind
+```
+
 The Python application can be built into a local Docker image or pulled as a
 released image from GHCR.
 Kind runs an isolated Kubernetes cluster on the developer machine.
