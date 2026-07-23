@@ -28,8 +28,8 @@ Each release should happen automatically.
 
 ### review
 
-* please review [shellscript](shell/script.sh)
+* please review [shellscript](review/script.sh)
 
-* please review [deployment](k8s/nginx.yaml)
+* please review [deployment](review/nginx.yaml)
 
 * extras: proper explanation

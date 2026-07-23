@@ -93,14 +93,13 @@ to commits from `main`; a `latest` tag is never published.
 
 ## Review Tasks
 
-The original files to review are [shell/script.sh](shell/script.sh) and
-[k8s/nginx.yaml](k8s/nginx.yaml). Their written reviews have not been added
-yet.
+The original [shell script](review/script.sh) and
+[Kubernetes manifest](review/nginx.yaml) are kept unchanged with a
+[written review](review/README.md).
 
 ## Known Limitations
 
 - The Helm chart is not yet published as an OCI artifact.
-- The shell script and Kubernetes deployment reviews are still pending.
 - The setup is intended for local development, not production.
 - There is no ingress, TLS, authentication, monitoring stack, or persistent
   storage.
