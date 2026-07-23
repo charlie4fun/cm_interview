@@ -4,6 +4,7 @@ from unittest.mock import patch
 
 from scripts.check_environment import (
     check_docker_daemon,
+    check_python_version,
     check_python_venv,
     check_tool,
     version_from,
@@ -14,6 +15,32 @@ class EnvironmentCheckTest(unittest.TestCase):
     def test_version_from_common_tool_output(self) -> None:
         self.assertEqual(version_from("Docker version 27.1.2"), (27, 1, 2))
         self.assertEqual(version_from("Client Version: v1.31.4"), (1, 31, 4))
+
+    def test_python_version_below_supported_range(self) -> None:
+        self.assertEqual(
+            check_python_version((3, 11, 9)),
+            (
+                False,
+                "MISSING: Python - current version: 3.11.9; "
+                "desired version: >= 3.12, < 3.14",
+            ),
+        )
+
+    def test_python_version_in_supported_range(self) -> None:
+        self.assertEqual(
+            check_python_version((3, 12, 0)),
+            (True, "OK: Python 3.12.0"),
+        )
+
+    def test_python_version_at_upper_bound(self) -> None:
+        self.assertEqual(
+            check_python_version((3, 14, 0)),
+            (
+                False,
+                "MISSING: Python - current version: 3.14.0; "
+                "desired version: >= 3.12, < 3.14",
+            ),
+        )
 
     @patch("scripts.check_environment.executable", return_value=None)
     def test_missing_tool(self, _executable: object) -> None:

@@ -24,6 +24,7 @@ DISPLAY_NAMES = {
     "pre-commit": "pre-commit",
 }
 PYTHON_MIN_VERSION = (3, 12)
+PYTHON_MAX_VERSION = (3, 14)
 
 
 def version_from(output: str) -> tuple[int, ...] | None:
@@ -43,6 +44,23 @@ def executable(name: str) -> str | None:
 
 def format_version(version: tuple[int, ...]) -> str:
     return ".".join(map(str, version))
+
+
+def check_python_version(
+    version: tuple[int, ...] | None = None,
+) -> tuple[bool, str]:
+    detected = version if version is not None else tuple(sys.version_info[:3])
+    required = (
+        f">= {format_version(PYTHON_MIN_VERSION)}, "
+        f"< {format_version(PYTHON_MAX_VERSION)}"
+    )
+    if detected < PYTHON_MIN_VERSION or detected >= PYTHON_MAX_VERSION:
+        return (
+            False,
+            f"MISSING: Python - current version: "
+            f"{format_version(detected)}; desired version: {required}",
+        )
+    return True, f"OK: Python {format_version(detected)}"
 
 
 def check_tool(
@@ -107,18 +125,7 @@ def main() -> int:
     args = parser.parse_args()
     checks: list[tuple[bool, str]] = []
 
-    python_version = tuple(sys.version_info[:3])
-    if python_version < PYTHON_MIN_VERSION:
-        checks.append(
-            (
-                False,
-                f"MISSING: Python - current version: "
-                f"{format_version(python_version)}; desired version: "
-                f">= {format_version(PYTHON_MIN_VERSION)}",
-            )
-        )
-    else:
-        checks.append((True, f"OK: Python {format_version(python_version)}"))
+    checks.append(check_python_version())
     checks.append(check_python_venv())
 
     for name, (minimum, version_args) in REQUIREMENTS.items():
