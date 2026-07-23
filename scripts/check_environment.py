@@ -85,6 +85,21 @@ def check_docker_daemon() -> tuple[bool, str]:
     return True, "OK: Docker daemon accessible"
 
 
+def check_python_venv() -> tuple[bool, str]:
+    result = subprocess.run(
+        [sys.executable, "-c", "import ensurepip, venv"],
+        stdout=subprocess.DEVNULL,
+        stderr=subprocess.DEVNULL,
+    )
+    if result.returncode:
+        package = f"python{sys.version_info.major}.{sys.version_info.minor}-venv"
+        return (
+            False,
+            f"MISSING: Python venv - install {package} on Debian/Ubuntu",
+        )
+    return True, "OK: Python venv available"
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--skip-pre-commit", action="store_true", help=argparse.SUPPRESS)
@@ -103,6 +118,7 @@ def main() -> int:
         )
     else:
         checks.append((True, f"OK: Python {format_version(python_version)}"))
+    checks.append(check_python_venv())
 
     for name, (minimum, version_args) in REQUIREMENTS.items():
         checks.append(check_tool(name, minimum, version_args))

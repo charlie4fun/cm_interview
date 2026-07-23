@@ -2,7 +2,12 @@ import subprocess
 import unittest
 from unittest.mock import patch
 
-from scripts.check_environment import check_docker_daemon, check_tool, version_from
+from scripts.check_environment import (
+    check_docker_daemon,
+    check_python_venv,
+    check_tool,
+    version_from,
+)
 
 
 class EnvironmentCheckTest(unittest.TestCase):
@@ -52,6 +57,30 @@ class EnvironmentCheckTest(unittest.TestCase):
         self.assertEqual(
             check_docker_daemon(),
             (False, "MISSING: Docker daemon - inaccessible"),
+        )
+
+    @patch("scripts.check_environment.subprocess.run")
+    def test_python_venv_is_available(self, run: object) -> None:
+        run.return_value = subprocess.CompletedProcess(args=[], returncode=0)
+        self.assertEqual(
+            check_python_venv(),
+            (True, "OK: Python venv available"),
+        )
+
+    @patch("scripts.check_environment.subprocess.run")
+    @patch("scripts.check_environment.sys.version_info")
+    def test_python_venv_is_missing(
+        self, version_info: object, run: object
+    ) -> None:
+        version_info.major = 3
+        version_info.minor = 12
+        run.return_value = subprocess.CompletedProcess(args=[], returncode=1)
+        self.assertEqual(
+            check_python_venv(),
+            (
+                False,
+                "MISSING: Python venv - install python3.12-venv on Debian/Ubuntu",
+            ),
         )
 
 
