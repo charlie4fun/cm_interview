@@ -1,0 +1,70 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLUSTER_NAME: interview-ci
+      APP_VERSION: ci
+      COMMIT_SHA: ${{ github.sha }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Install development dependencies
+        run: make install
+
+      - name: Run checks
+        run: make check
+
+      - name: Build application image
+        run: make image
+
+      - name: Validate Helm chart
+        run: make chart
+
+      - name: Create kind cluster
+        uses: helm/kind-action@v1
+        with:
+          cluster_name: interview-ci
+          config: cluster/kind.yaml
+
+      - name: Deploy and run smoke tests
+        run: make deploy-built verify-local
+
+      - name: Export cluster diagnostics
+        if: failure()
+        run: kind export logs --name "${CLUSTER_NAME}" /tmp/kind-logs
+
+      - name: Upload cluster diagnostics
+        if: failure()
+        uses: actions/upload-artifact@v6
+        with:
+          name: kind-logs
+          path: /tmp/kind-logs
+          retention-days: 3
+
+      - name: Delete kind cluster
+        if: always()
+        run: make clean-cluster
