@@ -48,6 +48,20 @@ class EnvironmentCheckTest(unittest.TestCase):
             (True, "OK: Docker 27.1.2"),
         )
 
+    @patch(
+        "scripts.check_environment.executable",
+        return_value=".venv/bin/pre-commit",
+    )
+    @patch("scripts.check_environment.subprocess.run")
+    def test_project_local_pre_commit(self, run: object, _executable: object) -> None:
+        run.return_value = subprocess.CompletedProcess(
+            args=[], returncode=0, stdout="pre-commit 4.6.1", stderr=""
+        )
+        self.assertEqual(
+            check_tool("pre-commit", (4, 0), ["--version"]),
+            (True, "OK: pre-commit 4.6.1 (.venv)"),
+        )
+
     @patch("scripts.check_environment.executable", return_value="/usr/bin/docker")
     @patch("scripts.check_environment.subprocess.run")
     def test_inaccessible_docker_daemon(
