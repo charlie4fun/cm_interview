@@ -3,12 +3,14 @@ import threading
 import unittest
 from http.client import HTTPConnection
 
-from app.server import AppServer, ApplicationState
+from app.server import AppServer, ApplicationState, logger
 
 
 class ApplicationTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls) -> None:
+        cls.logger_disabled = logger.disabled
+        logger.disabled = True
         cls.state = ApplicationState()
         cls.server = AppServer(("127.0.0.1", 0), cls.state)
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
@@ -20,6 +22,7 @@ class ApplicationTest(unittest.TestCase):
         cls.server.shutdown()
         cls.server.server_close()
         cls.thread.join()
+        logger.disabled = cls.logger_disabled
 
     def get(self, path: str) -> tuple[int, str, bytes]:
         connection = HTTPConnection("127.0.0.1", self.port)
