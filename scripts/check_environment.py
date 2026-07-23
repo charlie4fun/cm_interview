@@ -70,7 +70,8 @@ def check_tool(
             f"MISSING: {display_name} - current version: "
             f"{format_version(detected)}; desired version: >= {required}",
         )
-    return True, f"OK: {display_name} {format_version(detected)}"
+    location = " (.venv)" if name == "pre-commit" and command.startswith(".venv/") else ""
+    return True, f"OK: {display_name} {format_version(detected)}{location}"
 
 
 def check_docker_daemon() -> tuple[bool, str]:

@@ -74,4 +74,3 @@ The following components and practices will not be included:
 4. The monorepo makes changes and reviews simpler, but would be less suitable for a larger project with multiple teams.
 5. GitHub Actions and GHCR provide a simple automated release process, but the workflow is specific to GitHub.
 6. Not using GitOps or additional infrastructure tools keeps the solution small and easy to understand, but demonstrates fewer production operations practices.
-

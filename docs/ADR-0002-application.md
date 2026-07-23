@@ -18,5 +18,3 @@ The assignment needs a small application that demonstrates delivery and operatio
 The application is small, has no runtime dependencies, and is easy to run and explain.
 The standard-library HTTP server is sufficient for this exercise but is not intended to replace a production application server.
 Metrics exposition and request instrumentation must be implemented and tested manually because no client library is used.
-
-
