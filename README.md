@@ -31,9 +31,10 @@ The Makefile provides the same entry points intended for later CI automation.
 Prerequisites are listed in [developer setup](docs/developer-setup.md).
 
 ```shell
-make check-env
 make setup
-make local-delivery
+make check
+make check-env
+make e2e
 ```
 
 Remove the local cluster when finished:
@@ -46,15 +47,16 @@ make clean-cluster
 
 | Command | Purpose |
 | --- | --- |
-| `make check-env` | Check required tools and Docker access |
 | `make setup` | Create the virtual environment and install Git hooks |
-| `make check` | Run repository checks |
+| `make check` | Run lint and unit tests |
 | `make test` | Run application and tooling tests |
+| `make check-env` | Check the complete Docker and Kubernetes toolchain |
+| `make e2e` | Validate the toolchain and run local delivery |
 | `make image` | Build the local container image |
 | `make cluster` | Create the kind cluster |
 | `make deploy` | Build, load, and deploy the application |
 | `make verify-local` | Run runtime verification |
-| `make local-delivery` | Run the complete local delivery path |
+| `make local-delivery` | Build, deploy, and verify without tool checks |
 | `make clean-cluster` | Delete the kind cluster |
 
 ## Release Model

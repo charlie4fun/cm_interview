@@ -14,12 +14,3 @@ repos:
     rev: v1.5.0
     hooks:
       - id: detect-secrets
-
-  - repo: local
-    hooks:
-      - id: helm-lint
-        name: lint Helm chart
-        entry: helm lint charts/interview-app
-        language: system
-        pass_filenames: false
-        files: ^charts/interview-app/

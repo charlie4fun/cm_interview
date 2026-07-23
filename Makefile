@@ -1,4 +1,4 @@
-.PHONY: help check-env setup check test image cluster deploy verify-local local-delivery clean-cluster
+.PHONY: help check-env setup check test e2e image cluster deploy verify-local local-delivery clean-cluster
 
 CLUSTER_NAME ?= interview-dev
 NAMESPACE ?= interview
@@ -16,18 +16,21 @@ check-env: ## Check required tools, versions, and Docker daemon access.
 	@python3 scripts/check_environment.py
 
 setup: ## Install project-local tools and Git hooks.
-	@python3 scripts/check_environment.py --skip-pre-commit
 	python3 -m venv .venv
 	.venv/bin/python -m pip install --upgrade pip
 	.venv/bin/python -m pip install -r requirements-dev.txt
-	@python3 scripts/check_environment.py
 	.venv/bin/pre-commit install
 
-check: ## Run repository checks.
+check: ## Run lint and unit tests.
 	.venv/bin/pre-commit run --all-files
+	.venv/bin/python -m unittest discover -s tests -v
 
 test: ## Run Python tests.
 	.venv/bin/python -m unittest discover -s tests -v
+
+e2e: check-env ## Validate and run the complete local delivery path.
+	helm lint charts/interview-app
+	$(MAKE) local-delivery
 
 image: ## Build the local application image.
 	docker build \
