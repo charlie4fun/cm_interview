@@ -27,7 +27,7 @@ check: ## Run repository checks.
 	.venv/bin/pre-commit run --all-files
 
 test: ## Run Python tests.
-	python3 -m unittest discover -v
+	.venv/bin/python -m unittest discover -s tests -v
 
 image: ## Build the local application image.
 	docker build \
