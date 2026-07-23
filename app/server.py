@@ -21,6 +21,8 @@ COMMIT_SHA = os.getenv("COMMIT_SHA", "unknown")
 class JsonFormatter(logging.Formatter):
     """Render application logs as one JSON object per line."""
 
+    converter = time.gmtime
+
     def format(self, record: logging.LogRecord) -> str:
         event: dict[str, Any] = {
             "timestamp": self.formatTime(record, "%Y-%m-%dT%H:%M:%SZ"),

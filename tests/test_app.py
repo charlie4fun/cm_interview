@@ -1,9 +1,23 @@
 import json
+import logging
 import threading
+import time
 import unittest
 from http.client import HTTPConnection
 
-from app.server import AppServer, ApplicationState, logger
+from app.server import AppServer, ApplicationState, JsonFormatter, logger
+
+
+class JsonFormatterTest(unittest.TestCase):
+    def test_timestamp_is_utc(self) -> None:
+        formatter = JsonFormatter()
+        record = logging.LogRecord("test", logging.INFO, "", 0, "message", (), None)
+        record.created = 0
+
+        event = json.loads(formatter.format(record))
+
+        self.assertIs(formatter.converter, time.gmtime)
+        self.assertEqual(event["timestamp"], "1970-01-01T00:00:00Z")
 
 
 class ApplicationTest(unittest.TestCase):
