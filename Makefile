@@ -1,9 +1,10 @@
-.PHONY: help check-env install setup check test chart e2e image cluster deploy-built deploy verify-local local-delivery clean-cluster
+.PHONY: help check-env install setup check test chart e2e image pull-release cluster deploy-built deploy deploy-release verify-local local-delivery release-delivery clean-cluster
 
 CLUSTER_NAME ?= interview-dev
 NAMESPACE ?= interview
 RELEASE_NAME ?= interview
 IMAGE_REPOSITORY ?= interview-app
+GHCR_IMAGE_REPOSITORY ?= ghcr.io/charlie4fun/cm_interview
 APP_VERSION ?= dev
 COMMIT_SHA ?= $(shell git rev-parse --short HEAD 2>/dev/null || echo unknown)
 IMAGE_TAG ?= $(APP_VERSION)
@@ -42,6 +43,13 @@ image: ## Build the local application image.
 		--build-arg COMMIT_SHA=$(COMMIT_SHA) \
 		--tag $(IMAGE) .
 
+pull-release: ## Pull a released image from GHCR (requires RELEASE_VERSION).
+	@test -n "$(RELEASE_VERSION)" || { \
+		echo "RELEASE_VERSION is required, for example: RELEASE_VERSION=0.1.0" >&2; \
+		exit 1; \
+	}
+	docker pull $(GHCR_IMAGE_REPOSITORY):$(RELEASE_VERSION)
+
 cluster: ## Create the local kind cluster if it does not exist.
 	@if ! kind get clusters | grep -qx '$(CLUSTER_NAME)'; then \
 		kind create cluster --name $(CLUSTER_NAME) --config cluster/kind.yaml; \
@@ -60,11 +68,19 @@ deploy-built: cluster ## Load the existing image and deploy it with Helm.
 
 deploy: image deploy-built ## Build, load, and deploy the application.
 
+deploy-release: pull-release ## Pull and deploy a released image from GHCR.
+	$(MAKE) deploy-built \
+		IMAGE_REPOSITORY=$(GHCR_IMAGE_REPOSITORY) \
+		IMAGE_TAG=$(RELEASE_VERSION) \
+		COMMIT_SHA=release-$(RELEASE_VERSION)
+
 verify-local: ## Verify endpoints, probes, rolling updates, and graceful shutdown.
 	CLUSTER_NAME=$(CLUSTER_NAME) NAMESPACE=$(NAMESPACE) RELEASE_NAME=$(RELEASE_NAME) \
 		CHART=charts/interview-app scripts/verify_local_delivery.sh
 
 local-delivery: deploy verify-local ## Build, deploy, and verify the complete local path.
+
+release-delivery: deploy-release verify-local ## Deploy and verify a released GHCR image.
 
 clean-cluster: ## Delete the local kind cluster.
 	kind delete cluster --name $(CLUSTER_NAME)
