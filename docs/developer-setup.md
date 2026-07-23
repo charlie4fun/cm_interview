@@ -14,3 +14,10 @@ Pre-commit is installed into `.venv` by `make setup`.
 1. Run `make setup` on a fresh checkout to validate system tools, create `.venv`, and install Git hooks.
 2. Run `make check-env` for a read-only environment check.
 3. Run `make check` to execute all repository checks.
+4. Run `make local-delivery` to build the image, create the `interview-dev`
+   kind cluster, deploy the Helm release, and verify its runtime behaviour.
+5. Run `make clean-cluster` to remove the local cluster.
+
+The local delivery check verifies the HTTP endpoints and Kubernetes probes,
+performs a rolling update, sends `SIGTERM` to one application process, and
+checks its shutdown log before Kubernetes restarts it.
