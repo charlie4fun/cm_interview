@@ -1,36 +1,79 @@
 
-# Interviews
+# Local Kubernetes Delivery
 
-## This repo contains tasks we request interviewees to complete
+This repository contains a local-first implementation of the original
+[test assignment](TASK.md).
 
-* This repository should be forked, candidates should work in their own forked versions.
-Please don't open pull requests with solutions agains this repository.
-* No tasks require the use of any paid services.
-* For all of the following tasks please use your favourite tools.
-* During the interview the interviewee guides us through
-their solution. Explaining decisions and technical concepts as we go.
-* Tasks can be solved in a very simplistic way or as complicated as you can imagine.
-Both can be valid.
+## What Is Implemented
 
-### k8s deployment
+- A dependency-free Python HTTP service with health, readiness, metrics, build
+  information, structured logs, and graceful shutdown.
+- A non-root container image with build version and commit metadata.
+- A local kind cluster named `interview-dev`.
+- A Helm deployment with two replicas, probes, resource limits, a rolling
+  update strategy, and a restricted container security context.
+- A runtime check for endpoints, probes, rolling updates, and graceful
+  shutdown.
+- Local environment checks, unit tests, and pre-commit validation.
 
-* please don't use cloud infra providers like AWS, GCP etc. The cluster should
-be a local one.
+## Architecture
 
-1. Set up a kubernetes cluster ie. kind, minikube, k3s etc.
-the one you like the most.
-2. Build and release an app. This application should have a dockerfile created
-by you and it should be built by you. This can be something very simple,
-ie traefik/whoami, hashicorp/http-echo, your own if you have one.
-Each release should happen automatically.
-3. Create a deployment of this app.
+The Python application is built into a local Docker image.
+Kind runs an isolated Kubernetes cluster on the developer machine.
+The image is loaded directly into kind without an external registry.
+Helm installs and upgrades the application in the `interview` namespace.
+A ClusterIP Service exposes the application inside the cluster.
+Kubernetes probes and a two-replica rolling strategy maintain availability.
+The Makefile provides the same entry points intended for later CI automation.
 
-* extras: IaC, GitOps, semver, changelog
+## Quick Start
 
-### review
+Prerequisites are listed in [developer setup](docs/developer-setup.md).
 
-* please review [shellscript](shell/script.sh)
+```shell
+make check-env
+make setup
+make local-delivery
+```
 
-* please review [deployment](k8s/nginx.yaml)
+Remove the local cluster when finished:
 
-* extras: proper explanation
+```shell
+make clean-cluster
+```
+
+## Main Commands
+
+| Command | Purpose |
+| --- | --- |
+| `make check-env` | Check required tools and Docker access |
+| `make setup` | Create the virtual environment and install Git hooks |
+| `make check` | Run repository checks |
+| `make test` | Run application and tooling tests |
+| `make image` | Build the local container image |
+| `make cluster` | Create the kind cluster |
+| `make deploy` | Build, load, and deploy the application |
+| `make verify-local` | Run runtime verification |
+| `make local-delivery` | Run the complete local delivery path |
+| `make clean-cluster` | Delete the kind cluster |
+
+## Release Model
+
+Local builds use `APP_VERSION`, `COMMIT_SHA`, and an image tag passed through
+the Makefile. The intended release model is Semantic Versioning, with each Git
+tag producing a versioned image in GHCR. Automated CI and release workflows
+are intentionally deferred until the local delivery path is stable.
+
+## Review Tasks
+
+The original files to review are [shell/script.sh](shell/script.sh) and
+[k8s/nginx.yaml](k8s/nginx.yaml). Their written reviews have not been added
+yet.
+
+## Known Limitations
+
+- CI, automatic releases, and GHCR publishing are not implemented yet.
+- The shell script and Kubernetes deployment reviews are still pending.
+- The setup is intended for local development, not production.
+- There is no ingress, TLS, authentication, monitoring stack, or persistent
+  storage.
