@@ -15,6 +15,8 @@ This repository contains a local-first implementation of the original
 - A runtime check for endpoints, probes, rolling updates, and graceful
   shutdown.
 - Local environment checks, unit tests, and pre-commit validation.
+- CI validation of the full deployment path in a temporary kind cluster.
+- SemVer releases published to GitHub Container Registry.
 
 ## Architecture
 
@@ -47,13 +49,16 @@ make clean-cluster
 
 | Command | Purpose |
 | --- | --- |
+| `make install` | Install project-local development dependencies |
 | `make setup` | Create the virtual environment and install Git hooks |
 | `make check` | Run lint and unit tests |
 | `make test` | Run application and tooling tests |
+| `make chart` | Validate the Helm chart |
 | `make check-env` | Check the complete Docker and Kubernetes toolchain |
 | `make e2e` | Validate the toolchain and run local delivery |
 | `make image` | Build the local container image |
 | `make cluster` | Create the kind cluster |
+| `make deploy-built` | Load and deploy an existing application image |
 | `make deploy` | Build, load, and deploy the application |
 | `make verify-local` | Run runtime verification |
 | `make local-delivery` | Build, deploy, and verify without tool checks |
@@ -62,9 +67,13 @@ make clean-cluster
 ## Release Model
 
 Local builds use `APP_VERSION`, `COMMIT_SHA`, and an image tag passed through
-the Makefile. The intended release model is Semantic Versioning, with each Git
-tag producing a versioned image in GHCR. Automated CI and release workflows
-are intentionally deferred until the local delivery path is stable.
+the Makefile. Pull requests and pushes to `main` run checks, build the image,
+validate the chart, and verify a deployment in a temporary kind cluster.
+
+A stable Semantic Versioning tag such as `v1.2.0` publishes one image to
+`ghcr.io/<owner>/<repository>`. The image receives the tags `1.2.0` and
+`sha-<short-commit>`, which point to the same digest. Release tags must point
+to commits from `main`; a `latest` tag is never published.
 
 ## Review Tasks
 
@@ -74,7 +83,7 @@ yet.
 
 ## Known Limitations
 
-- CI, automatic releases, and GHCR publishing are not implemented yet.
+- The Helm chart is not yet published as an OCI artifact.
 - The shell script and Kubernetes deployment reviews are still pending.
 - The setup is intended for local development, not production.
 - There is no ingress, TLS, authentication, monitoring stack, or persistent

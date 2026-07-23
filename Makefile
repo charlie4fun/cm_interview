@@ -1,4 +1,4 @@
-.PHONY: help check-env setup check test e2e image cluster deploy verify-local local-delivery clean-cluster
+.PHONY: help check-env install setup check test chart e2e image cluster deploy-built deploy verify-local local-delivery clean-cluster
 
 CLUSTER_NAME ?= interview-dev
 NAMESPACE ?= interview
@@ -15,10 +15,12 @@ help: ## List available commands.
 check-env: ## Check required tools, versions, and Docker daemon access.
 	@python3 scripts/check_environment.py
 
-setup: ## Install project-local tools and Git hooks.
+install: ## Install project-local development dependencies.
 	python3 -m venv .venv
 	.venv/bin/python -m pip install --upgrade pip
 	.venv/bin/python -m pip install -r requirements-dev.txt
+
+setup: install ## Install development dependencies and Git hooks.
 	.venv/bin/pre-commit install
 
 check: ## Run lint and unit tests.
@@ -28,8 +30,10 @@ check: ## Run lint and unit tests.
 test: ## Run Python tests.
 	.venv/bin/python -m unittest discover -s tests -v
 
-e2e: check-env ## Validate and run the complete local delivery path.
+chart: ## Validate the Helm chart.
 	helm lint charts/interview-app
+
+e2e: check-env chart ## Validate and run the complete local delivery path.
 	$(MAKE) local-delivery
 
 image: ## Build the local application image.
@@ -43,7 +47,7 @@ cluster: ## Create the local kind cluster if it does not exist.
 		kind create cluster --name $(CLUSTER_NAME) --config cluster/kind.yaml; \
 	fi
 
-deploy: image cluster ## Load the image and deploy it with Helm.
+deploy-built: cluster ## Load the existing image and deploy it with Helm.
 	kind load docker-image $(IMAGE) --name $(CLUSTER_NAME)
 	helm upgrade --install $(RELEASE_NAME) charts/interview-app \
 		--kube-context kind-$(CLUSTER_NAME) \
@@ -53,6 +57,8 @@ deploy: image cluster ## Load the image and deploy it with Helm.
 		--set-string image.tag=$(IMAGE_TAG) \
 		--set-string deploymentRevision=$(COMMIT_SHA) \
 		--wait --timeout 90s
+
+deploy: image deploy-built ## Build, load, and deploy the application.
 
 verify-local: ## Verify endpoints, probes, rolling updates, and graceful shutdown.
 	CLUSTER_NAME=$(CLUSTER_NAME) NAMESPACE=$(NAMESPACE) RELEASE_NAME=$(RELEASE_NAME) \

@@ -1,6 +1,6 @@
 # What this repo is
 
-This repository contains a test assignment for a DevOps Engineer position. The company name is intentionally omitted to make this implementation less discoverable by other candidates.
+This repository contains a test assignment for a DevOps Engineer position.
 
 # Architecture
 
