@@ -1,0 +1,21 @@
+replicaCount: 2
+
+image:
+  repository: interview-app
+  tag: dev
+  pullPolicy: IfNotPresent
+
+service:
+  port: 80
+
+resources:
+  requests:
+    cpu: 10m
+    memory: 32Mi
+  limits:
+    cpu: 200m
+    memory: 128Mi
+
+deploymentRevision: initial
+
+terminationGracePeriodSeconds: 10

@@ -1,0 +1,6 @@
+apiVersion: v2
+name: interview-app
+description: Local deployment for the interview application
+type: application
+version: 0.1.0
+appVersion: "dev"
