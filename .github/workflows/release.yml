@@ -63,3 +63,5 @@ jobs:
           tags: |
             ${{ steps.release.outputs.image }}:${{ steps.release.outputs.version }}
             ${{ steps.release.outputs.image }}:${{ steps.release.outputs.sha_tag }}
+          cache-from: type=registry,ref=${{ steps.release.outputs.image }}:buildcache
+          cache-to: type=registry,ref=${{ steps.release.outputs.image }}:buildcache,mode=max
