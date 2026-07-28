@@ -26,6 +26,8 @@ setup: install ## Install development dependencies and Git hooks.
 
 check: ## Run lint and unit tests.
 	.venv/bin/pre-commit run --all-files
+	.venv/bin/ruff check app tests scripts
+	.venv/bin/shellcheck scripts/*.sh
 	.venv/bin/python -m unittest discover -s tests -v
 
 test: ## Run Python tests.
