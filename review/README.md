@@ -79,8 +79,9 @@ Service, but Kubernetes cannot deploy it successfully as written.
 
 ### Reliability and security problems
 
-1. The unqualified `nginx` image uses the mutable `latest` tag. A fixed version
-   or digest is required for repeatable deployments.
+1. The image version is not pinned. `image: nginx` is the same as using
+   `nginx:latest`. In production, use a specific tag or digest. This makes
+   deployments repeatable and allows rollback to a known version.
 
 2. Readiness and liveness probes are missing, so Kubernetes cannot distinguish
    a ready instance from an unhealthy one.
