@@ -45,11 +45,6 @@ spec:
               port: http
             periodSeconds: 5
             failureThreshold: 3
-          lifecycle:
-            preStop:
-              httpGet:
-                path: /readyz
-                port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}
           securityContext:
