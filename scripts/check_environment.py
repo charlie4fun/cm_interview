@@ -9,7 +9,6 @@ import subprocess
 import sys
 from pathlib import Path
 
-
 REQUIREMENTS = {
     "docker": ((24, 0), ["--version"]),
     "kubectl": ((1, 31), ["version", "--client"]),

@@ -12,7 +12,6 @@ from http import HTTPStatus
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from typing import Any
 
-
 APP_NAME = os.getenv("APP_NAME", "interview-app")
 APP_VERSION = os.getenv("APP_VERSION", "dev")
 COMMIT_SHA = os.getenv("COMMIT_SHA", "unknown")

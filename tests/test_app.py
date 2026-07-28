@@ -5,7 +5,7 @@ import time
 import unittest
 from http.client import HTTPConnection
 
-from app.server import AppServer, ApplicationState, JsonFormatter, logger
+from app.server import ApplicationState, AppServer, JsonFormatter, logger
 
 
 class JsonFormatterTest(unittest.TestCase):

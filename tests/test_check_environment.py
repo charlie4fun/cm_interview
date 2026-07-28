@@ -4,8 +4,8 @@ from unittest.mock import patch
 
 from scripts.check_environment import (
     check_docker_daemon,
-    check_python_version,
     check_python_venv,
+    check_python_version,
     check_tool,
     version_from,
 )
