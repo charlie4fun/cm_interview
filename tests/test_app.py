@@ -73,6 +73,16 @@ class ApplicationTest(unittest.TestCase):
         self.assertEqual(status, 404)
         self.assertEqual(json.loads(body), {"error": "not_found"})
 
+    def test_unknown_paths_share_metric_label(self) -> None:
+        self.get("/random-one")
+        self.get("/random-two")
+
+        metrics = self.get("/metrics")[2]
+
+        self.assertIn(b'path="not_found",status="404"', metrics)
+        self.assertNotIn(b'path="/random-one"', metrics)
+        self.assertNotIn(b'path="/random-two"', metrics)
+
 
 if __name__ == "__main__":
     unittest.main()
