@@ -93,6 +93,7 @@ class RequestHandler(BaseHTTPRequestHandler):
     def do_GET(self) -> None:  # noqa: N802 - required by BaseHTTPRequestHandler
         started = time.monotonic()
         path = self.path.split("?", 1)[0]
+        metric_path = path
 
         if path == "/":
             status = self._json(
@@ -111,9 +112,10 @@ class RequestHandler(BaseHTTPRequestHandler):
         elif path == "/metrics":
             status = self._text(HTTPStatus.OK, self.server.state.metrics())
         else:
+            metric_path = "not_found"
             status = self._json(HTTPStatus.NOT_FOUND, {"error": "not_found"})
 
-        self.server.state.record_request(path, status)
+        self.server.state.record_request(metric_path, status)
         logger.info(
             "request completed",
             extra={

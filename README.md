@@ -109,6 +109,7 @@ The original [shell script](review/script.sh) and
 
 ## Known Limitations
 
+- Published GHCR images currently support only `linux/amd64`.
 - The Helm chart is not yet published as an OCI artifact.
 - The setup is intended for local development, not production.
 - There is no ingress, TLS, authentication, monitoring stack, or persistent
